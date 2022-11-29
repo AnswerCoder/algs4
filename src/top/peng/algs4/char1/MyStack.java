@@ -1,57 +1,59 @@
 /*
- * @(#)ResizingArrayStack.java
+ * @(#)MyStack.java
  *
  * Copyright © 2022 3DMed Corporation.
  */
 package top.peng.algs4.char1;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
- * ResizingArrayStack LIFO后进先出栈 (可动态调整数组大小的实现)
+ * MyStack 下压堆栈 (链表实现)
  *
  * @author yunpeng.zhang
- * @version 1.0 2022/11/28
+ * @version 1.0 2022/11/29
  */
-public class ResizingArrayStack<T> implements Iterable<T>{
-
-    //栈元素
-    private T[] a  = (T[]) new Object[1];
+public class MyStack<T> implements Iterable<T>{
+    //栈顶元素
+    private Node first;
     //元素数量
     private int n = 0;
 
+    private class Node{
+        T val;
+        Node next;
+        Node(){}
+        Node(T val, Node next){
+            this.val = val;
+            this.next = next;
+        }
+    }
+
     public boolean isEmpty() {
-        return n == 0;
+        return first == null;
     }
 
     public int size() {
         return n;
     }
 
-    private void resize(int size){
-        //将栈移动到一个大小为size的新数组
-        T[] temp  = (T[]) new Object[size];
-        if (n >= 0)
-            System.arraycopy(a, 0, temp, 0, n);
-        a = temp;
-    }
-
     //入栈
     public void push(T t){
-        if (n == a.length ){
-            resize(2 * n);
-        }
-        a[n++] = t;
+        Node oldFirst = first;
+        first = new Node(t,oldFirst);
+        n++;
     }
 
     //出栈
     public T pop(){
-        T t = a[--n];
-        a[n] = null;  //避免对象游离
-        if (n > 0 && n == a.length / 4) {
-            resize(n / 2);
+        if (isEmpty()) {
+            throw new NoSuchElementException("Stack underflow");
         }
-        return t;
+        T v =  first.val;
+        first = first.next;
+        n--;
+        return v;
     }
 
     /**
@@ -61,21 +63,26 @@ public class ResizingArrayStack<T> implements Iterable<T>{
      */
     @Override
     public Iterator<T> iterator() {
-        return new ReversArrayIterator();
+        return new ListIterator();
     }
 
-    public class ReversArrayIterator implements Iterator<T> {
-        private int i = n;
+    public class ListIterator implements Iterator<T> {
+        private Node current = first;
 
         @Override
         public boolean hasNext() {
-            return i > 0;
+            return current != null;
         }
 
 
         @Override
         public T next() {
-            return a[--i];
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            T v = current.val;
+            current = current.next;
+            return v;
         }
 
         @Override
@@ -85,7 +92,7 @@ public class ResizingArrayStack<T> implements Iterable<T>{
     }
 
     public static void main(String[] args) {
-        ResizingArrayStack<String> stack = new ResizingArrayStack<>();
+        MyStack<String> stack = new MyStack<>();
         stack.push("to");
         stack.push("be");
         stack.push("or");
