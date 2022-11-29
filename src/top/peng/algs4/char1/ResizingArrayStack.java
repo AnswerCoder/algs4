@@ -30,7 +30,7 @@ public class ResizingArrayStack<T> implements Iterable<T>{
 
     private void resize(int size){
         //将栈移动到一个大小为size的新数组
-        T[] temp  = (T[]) new Object[1];
+        T[] temp  = (T[]) new Object[size];
         if (N >= 0)
             System.arraycopy(a, 0, temp, 0, N);
         a = temp;
@@ -81,6 +81,20 @@ public class ResizingArrayStack<T> implements Iterable<T>{
         @Override
         public void remove() {
             throw new RuntimeException("UnsupportedOperationException...");
+        }
+    }
+
+    public static void main(String[] args) {
+        ResizingArrayStack<String> stack = new ResizingArrayStack<>();
+        stack.push("to");
+        stack.push("be");
+        stack.push("or");
+        System.out.println(stack.pop());
+        stack.push("not");
+        stack.push("to");
+        stack.push("be");
+        for (String s : stack) {
+            System.out.println(s);
         }
     }
 }
